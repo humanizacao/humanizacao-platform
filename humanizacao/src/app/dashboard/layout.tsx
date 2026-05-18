@@ -1,24 +1,31 @@
-import { redirect } from 'next/navigation'
-import { createServerSupabaseClient } from '@/lib/supabase'
 import Sidebar from '@/components/layout/Sidebar'
 import Topbar from '@/components/layout/Topbar'
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createServerSupabaseClient()
-  const { data: { session } } = await supabase.auth.getSession()
-
-  if (!session) {
-    redirect('/login')
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*, company:companies(*)')
-    .eq('id', session.user.id)
-    .single()
-
-  if (!profile) {
-    redirect('/login')
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const profile = {
+    id: '',
+    full_name: 'Bruna Coutinho',
+    email: '',
+    role: 'consultoria' as const,
+    company_id: '',
+    is_active: true,
+    onboarding_completed: true,
+    metadata: {},
+    created_at: '',
+    updated_at: '',
+    company: {
+      id: '',
+      name: 'Viação Santa Clara',
+      slug: 'visac',
+      plan: 'enterprise' as const,
+      primary_color: '#1a2b4a',
+      secondary_color: '#2d8c6e',
+      settings: {},
+      max_employees: 200,
+      active: true,
+      created_at: '',
+      updated_at: '',
+    }
   }
 
   return (
