@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react'
 import { useDashboardStore } from '@/store'
-import { createClient } from '@/lib/supabase-client'
 import KPIGrid from '@/components/dashboard/KPIGrid'
 import HeatmapChart from '@/components/dashboard/HeatmapChart'
 import { RadarChart } from '@/components/dashboard/RadarChart'
@@ -23,7 +22,14 @@ export default function DashboardPage() {
   }, [])
 
   if (loading && !kpis) {
-    return <DashboardSkeleton />
+    return (
+      <div className="p-8 space-y-6 animate-pulse">
+        <div className="skeleton h-20 rounded-2xl" />
+        <div className="grid grid-cols-4 gap-4">
+          {[...Array(8)].map((_, i) => <div key={i} className="skeleton h-32 rounded-2xl" />)}
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -41,17 +47,6 @@ export default function DashboardPage() {
         <ParticipationWidget />
       </div>
       <SectorTable />
-    </div>
-  )
-}
-
-function DashboardSkeleton() {
-  return (
-    <div className="p-8 space-y-6 animate-pulse">
-      <div className="skeleton h-20 rounded-2xl" />
-      <div className="grid grid-cols-4 gap-4">
-        {[...Array(8)].map((_, i) => <div key={i} className="skeleton h-32 rounded-2xl" />)}
-      </div>
     </div>
   )
 }
