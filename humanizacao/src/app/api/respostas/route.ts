@@ -39,7 +39,7 @@ async function computeDimensionScores(
     const answer = answers[pergunta.id]
     if (!answer) continue
 
-    const dimSlug = (pergunta.dimensao as { slug: string })?.slug
+    const dimSlug = (pergunta.dimensao as unknown as { slug: string })?.slug
     if (!dimSlug) continue
 
     let score = answer.score
