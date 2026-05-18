@@ -1,51 +1,57 @@
-{
-  "name": "humanizacao-platform",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "next": "14.2.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "@supabase/supabase-js": "^2.43.1",
-    "@supabase/ssr": "^0.3.0",
-    "recharts": "^2.12.7",
-    "lucide-react": "^0.383.0",
-    "zustand": "^4.5.2",
-    "react-hook-form": "^7.51.5",
-    "zod": "^3.23.8",
-    "@hookform/resolvers": "^3.4.2",
-    "date-fns": "^3.6.0",
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^2.3.0",
-    "framer-motion": "^11.2.10",
-    "react-hot-toast": "^2.4.1",
-    "jspdf": "^2.5.1",
-    "jspdf-autotable": "^3.8.2",
-    "next-themes": "^0.3.0",
-    "@radix-ui/react-dialog": "^1.0.5",
-    "@radix-ui/react-dropdown-menu": "^2.0.6",
-    "@radix-ui/react-select": "^2.0.0",
-    "@radix-ui/react-switch": "^1.0.3",
-    "@radix-ui/react-tabs": "^1.0.4",
-    "@radix-ui/react-tooltip": "^1.0.7",
-    "@radix-ui/react-progress": "^1.0.3",
-    "@radix-ui/react-avatar": "^1.0.4"
-  },
-  "devDependencies": {
-    "typescript": "^5.4.5",
-    "@types/node": "^20.12.12",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "tailwindcss": "^3.4.3",
-    "autoprefixer": "^10.4.19",
-    "postcss": "^8.4.38",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.3"
+'use client'
+
+import { useEffect } from 'react'
+import { useDashboardStore } from '@/store'
+import { createClient } from '@/lib/supabase-client'
+import KPIGrid from '@/components/dashboard/KPIGrid'
+import HeatmapChart from '@/components/dashboard/HeatmapChart'
+import { RadarChart } from '@/components/dashboard/RadarChart'
+import RiskBars from '@/components/dashboard/RiskBars'
+import InsightsList from '@/components/dashboard/InsightsList'
+import PlanosWidget, { ParticipationWidget } from '@/components/dashboard/PlanosWidget'
+import SectorTable from '@/components/dashboard/SectorTable'
+import NR1Banner from '@/components/dashboard/NR1Banner'
+
+export default function DashboardPage() {
+  const { fetchDashboard, fetchPlans, refreshRealtime, kpis, loading } = useDashboardStore()
+
+  useEffect(() => {
+    fetchDashboard()
+    fetchPlans()
+    const refreshInterval = setInterval(refreshRealtime, 5 * 60 * 1000)
+    return () => clearInterval(refreshInterval)
+  }, [])
+
+  if (loading && !kpis) {
+    return <DashboardSkeleton />
   }
+
+  return (
+    <div className="p-8 space-y-6 max-w-[1600px]">
+      <NR1Banner />
+      <KPIGrid />
+      <div className="grid grid-cols-3 gap-5">
+        <div className="col-span-1"><HeatmapChart /></div>
+        <div className="col-span-1"><RadarChart /></div>
+        <div className="col-span-1"><RiskBars /></div>
+      </div>
+      <div className="grid grid-cols-3 gap-5">
+        <InsightsList />
+        <PlanosWidget />
+        <ParticipationWidget />
+      </div>
+      <SectorTable />
+    </div>
+  )
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="p-8 space-y-6 animate-pulse">
+      <div className="skeleton h-20 rounded-2xl" />
+      <div className="grid grid-cols-4 gap-4">
+        {[...Array(8)].map((_, i) => <div key={i} className="skeleton h-32 rounded-2xl" />)}
+      </div>
+    </div>
+  )
 }
