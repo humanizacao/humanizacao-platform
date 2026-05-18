@@ -46,7 +46,7 @@ async function computeDimensionScores(
     if (pergunta.inverted_score) score = 100 - score
 
     if (!dimensionAccumulators[dimSlug]) {
-      dimensionAccumulators[dimSlug] = { total: 0, count: 0, weight: (pergunta.weight as { weight: number })?.weight || 1 }
+      dimensionAccumulators[dimSlug] = { total: 0, count: 0, weight: pergunta.weight?.[0]?.weight || 1 }
     }
     dimensionAccumulators[dimSlug].total += score
     dimensionAccumulators[dimSlug].count += 1
